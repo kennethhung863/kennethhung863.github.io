@@ -81,7 +81,7 @@ h1{
 
 /*triangles*/
 #tri1{
-    margin-top: -25vh;
+    margin-top: -200px;
     width: 0;
     height: 0;
     border-style: solid;
@@ -92,11 +92,11 @@ h1{
 
 #tri2{
     margin-left: 60vw;
-    margin-top: -70vh;
+    margin-top: -450px;
     width: 0;
     height: 0;
     border-style: solid;
     border-color: transparent white transparent transparent;
-    border-width: 20vw 50vw 100px 0vw;
+    border-width: 200px 50vw 500px 0vw;
 
 }
