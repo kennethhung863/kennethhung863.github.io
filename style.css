@@ -5,7 +5,7 @@
 }
 
 header{
-    background-image: linear-gradient(rgba(0,0,0,0.25),rgba(0,0,0,0.25)),url(wallpaper.jpg);
+    background-image: linear-gradient(rgba(0,0,0,0),rgb(255, 255, 255,0.55)),url(wallpaper.jpg);
     height: 100vh;
     background-size: cover;
     background-position: center;
@@ -46,6 +46,7 @@ header{
 
 body{
     font-family: monospace;
+    /*  background-color: turquoise; */
 }
 
 .row{
@@ -68,3 +69,34 @@ h1{
     position: center;
 }
 
+.bruh{
+    /* margin-left: 100px; */
+    width: 0;
+    height: 0;
+    /* background-color: turquoise; */
+    border-top: 20px solid transparent;
+    border-right: 50px grey;
+    border-bottom: 50px solid transparent;
+}
+
+/*triangles*/
+#tri1{
+    margin-top: -25vh;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: transparent transparent transparent white;
+    border-width: 200px 0px 200px 80vw;
+
+}
+
+#tri2{
+    margin-left: 60vw;
+    margin-top: -70vh;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: transparent white transparent transparent;
+    border-width: 20vw 50vw 100px 0vw;
+
+}
