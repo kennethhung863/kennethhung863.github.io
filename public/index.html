@@ -3,17 +3,327 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Blog</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Hello World</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 90vw;
+            position: relative;
+            z-index: 1;
+        }
+
+        #fireworksCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .gif-container {
+            margin-bottom: 2rem;
+            max-width: 300px;
+            width: 100%;
+        }
+
+        .gif-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            transition: margin-bottom 0.3s ease;
+        }
+
+        #countdown {
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-end;
+            justify-content: center;
+            width: 100%;
+        }
+
+        button {
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: white;
+            color: #667eea;
+        }
+
+        #yesBtn {
+            transform-origin: left bottom;
+            margin-right: 0;
+        }
+
+        button:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        #yesBtn:hover {
+            transform: translateY(-2px);
+        }
+
+        #noBtn:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
-    <div id="gallery"></div>
-
-    <div id="modal" class="hidden">
-        <span id="close">&times;</span>
-        <img id="modal-img" src="" alt="Expanded Photo">
+    <canvas id="fireworksCanvas"></canvas>
+    <div class="content-wrapper">
+        <div class="gif-container">
+            <img id="gifImage" src="images/cute-plea1.gif" alt="GIF">
+        </div>
+        <h1 id="helloWorld">Will you be my valentines?</h1>
+        <div id="countdown" style="display: none;"></div>
+        <div class="button-container">
+            <button id="yesBtn">Yes</button>
+            <button id="noBtn">No</button>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const buttonContainer = document.querySelector('.button-container');
+        const helloWorld = document.getElementById('helloWorld');
+        const gifImage = document.getElementById('gifImage');
+        const countdownEl = document.getElementById('countdown');
+        const fireworksCanvas = document.getElementById('fireworksCanvas');
+        const fwCtx = fireworksCanvas.getContext('2d');
+        let scale = 1;
+        let fireworks = [];
+        let fireworksRunning = false;
+        let countdownInterval = null;
+
+        function resizeCanvas() {
+            fireworksCanvas.width = window.innerWidth;
+            fireworksCanvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        function createFireworkBurst(cx, cy) {
+            const particles = 120;
+            for (let i = 0; i < particles; i++) {
+                const angle = (Math.PI * 2 * i) / particles;
+                const speed = 3 + Math.random() * 4;
+                fireworks.push({
+                    x: cx,
+                    y: cy,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    alpha: 1,
+                    decay: 0.01 + Math.random() * 0.015,
+                    color: `hsl(${Math.random() * 360}, 80%, 60%)`
+                });
+            }
+        }
+
+        function animateFireworks() {
+            if (!fireworksRunning && fireworks.length === 0) return;
+            fireworksRunning = true;
+
+            // Slightly fade previous frame for bright trails
+            fwCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            fwCtx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+
+            fireworks.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.03; // gravity
+                p.alpha -= p.decay;
+            });
+
+            fireworks = fireworks.filter(p => p.alpha > 0);
+
+            fireworks.forEach(p => {
+                fwCtx.globalAlpha = p.alpha;
+                fwCtx.fillStyle = p.color;
+                fwCtx.beginPath();
+                fwCtx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
+                fwCtx.fill();
+            });
+
+            fwCtx.globalAlpha = 1;
+
+            if (fireworks.length > 0) {
+                requestAnimationFrame(animateFireworks);
+            } else {
+                fireworksRunning = false;
+            }
+        }
+
+        function launchCelebration() {
+            const cx = window.innerWidth / 2;
+            const cyTop = window.innerHeight / 3;
+            const cyMid = window.innerHeight / 2.2;
+
+            // Multiple big bursts across the screen
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const offsetX = (Math.random() - 0.5) * window.innerWidth * 0.6;
+                    const rowY = i % 2 === 0 ? cyTop : cyMid;
+                    createFireworkBurst(cx + offsetX, rowY);
+                    if (!fireworksRunning) {
+                        animateFireworks();
+                    }
+                }, i * 180);
+            }
+        }
+
+        function startCountdown() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            const targetDate = new Date(2026, 1, 11, 0, 0, 0); // Feb 11 2026 (month is 0-based)
+            countdownEl.style.display = 'block';
+
+            function updateCountdown() {
+                const now = new Date();
+                let diff = targetDate.getTime() - now.getTime();
+
+                if (diff <= 0) {
+                    countdownEl.textContent = "We have reunited! 💖";
+                    clearInterval(countdownInterval);
+                    return;
+                }
+
+                const totalSeconds = Math.floor(diff / 1000);
+                const days = Math.floor(totalSeconds / (60 * 60 * 24));
+                const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60));
+                const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+                const seconds = totalSeconds % 60;
+
+                countdownEl.textContent =
+                    `I will see you in ${days}d ${String(hours).padStart(2, '0')}h ` +
+                    `${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s !!!!!`;
+            }
+
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        // Text strings shown after the initial question
+        const textStrings = [
+            "You pressed the wrong button :(",
+            'Pretty please????',
+            'I really want you to say yes though',
+            "You would say that to me??",
+            "You're so mean :(",
+            'Ok fine, I will give you a big kiss if you say yes',
+            "I know you want to say yes hehe",
+            "meowow meowow meowow",
+        ];
+        let currentTextIndex = -1; // first No shows the first entry in the list
+
+        // GIFs to rotate through when No is pressed
+        const gifSources = [
+            'images/cute-plea1.gif',
+            'images/cute-plea2.gif',
+            'images/cute-plea3.gif',
+            'images/cute-plea4.gif',
+            'images/cute-plea5.gif',
+            'images/cute-plea6.gif',
+            'images/cute-plea7.gif',
+            'images/cute-plea-8.gif',
+        ];
+        let currentGifIndex = -1; // start before the first GIF (initial is images/yes.gif)
+
+
+        const yesGifSources = [
+            'images/yes2.gif',
+            'images/yes1.jpg',
+            'images/yes3.gif',
+            'images/yes4.jpg',
+        ];
+        yesBtn.addEventListener('click', function() {
+            // Replace the text with a yes message, no popup
+            helloWorld.textContent = 'Yay! I am excited to be your valentine!! 💖';
+            // Change the Yes button label
+            yesBtn.textContent = 'Poggers!';
+            // Show the yes GIF
+            currentGifIndex = (currentGifIndex + 1) % yesGifSources.length;
+            gifImage.src = yesGifSources[currentGifIndex];
+            // Hide the No button after they say yes
+            noBtn.style.display = 'none';
+            // Launch fireworks celebration
+            launchCelebration();
+            // Start countdown to Feb 11, 2026
+            startCountdown();
+        });
+
+        noBtn.addEventListener('click', function() {
+            // Change the text (rotate through list)
+            currentTextIndex = (currentTextIndex + 1) % textStrings.length;
+            helloWorld.textContent = textStrings[currentTextIndex];
+
+            // Rotate the GIF
+            currentGifIndex = (currentGifIndex + 1) % gifSources.length;
+            gifImage.src = gifSources[currentGifIndex];
+            
+            // Make Yes button bigger
+            scale += 0.2;
+            yesBtn.style.transform = `scale(${scale})`;
+            yesBtn.style.transition = 'transform 0.3s ease';
+            
+            // Calculate the button's actual width and add margin to prevent overlap with No button
+            const buttonWidth = yesBtn.offsetWidth;
+            const extraWidth = buttonWidth * (scale - 1);
+            yesBtn.style.marginRight = `${extraWidth}px`; // Only add the extra width needed
+            yesBtn.style.transition = 'transform 0.3s ease, margin-right 0.3s ease';
+            
+            // Adjust Hello World margin to accommodate growing button height
+            // Calculate extra height from scaling and add to margin-bottom
+            const buttonHeight = yesBtn.offsetHeight;
+            const extraHeight = buttonHeight * (scale - 1);
+            helloWorld.style.marginBottom = `${3 + (extraHeight / 16)}rem`; // Convert px to rem (assuming 16px base)
+            helloWorld.style.transition = 'margin-bottom 0.3s ease';
+        });
+    </script>
 </body>
 </html>
