@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>For ch <3</title>
     <style>
         * {
             margin: 0;
@@ -118,6 +118,8 @@
         </div>
         <h1 id="helloWorld">Will you be my valentines?</h1>
         <div id="countdown" style="display: none;"></div>
+        <div id="marginContainer"></div>
+
         <div class="button-container">
             <button id="yesBtn">Yes</button>
             <button id="noBtn">No</button>
@@ -131,6 +133,7 @@
         const helloWorld = document.getElementById('helloWorld');
         const gifImage = document.getElementById('gifImage');
         const countdownEl = document.getElementById('countdown');
+        const marginContainer = document.getElementById('marginContainer');
         const fireworksCanvas = document.getElementById('fireworksCanvas');
         const fwCtx = fireworksCanvas.getContext('2d');
         let scale = 1;
@@ -321,8 +324,8 @@
             // Calculate extra height from scaling and add to margin-bottom
             const buttonHeight = yesBtn.offsetHeight;
             const extraHeight = buttonHeight * (scale - 1);
-            helloWorld.style.marginBottom = `${3 + (extraHeight / 16)}rem`; // Convert px to rem (assuming 16px base)
-            helloWorld.style.transition = 'margin-bottom 0.3s ease';
+            marginContainer.style.marginBottom = `${3 + (extraHeight / 16)}rem`; // Convert px to rem (assuming 16px base)
+            marginContainer.style.transition = 'margin-bottom 0.3s ease';
         });
     </script>
 </body>
